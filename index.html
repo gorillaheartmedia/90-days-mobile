@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>90-Day 5-Goal Tracker (Card View)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+  body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(115deg, #e7f7fd 0%, #d4e6fc 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+.container {
+  max-width: 540px;
+  margin: 22px auto 30px auto;
+  background: rgba(255,255,255,0.93);
+  border-radius: 24px;
+  box-shadow: 0 10px 36px 0 rgba(54,86,120,0.11), 0 2px 4px 0 rgba(74,124,170,0.06);
+  padding: 14px 4vw 22px 4vw;
+  box-sizing: border-box;
+}
+.settings-bar {
+  text-align: right;
+  margin-bottom: 12px;
+  padding-right: 5px;
+}
+.settings-btn {
+  background: linear-gradient(90deg,#d7eaf6 60%,#c6f7e6 100%);
+  border: 1.7px solid #6bdad9;
+  color: #2995d1;
+  border-radius: 12px;
+  padding: 7px 18px;
+  font-size: 1.09em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 1.5px 7px #57e9e344;
+  margin-bottom: 2px;
+}
+.settings-btn:hover {
+  background: #31e5a533;
+  color: #17825b;
+  border-color: #37b599;
+}
+h1 {
+  text-align: center;
+  font-size: 1.85em;
+  font-weight: 800;
+  margin-bottom: 3px;
+  background: linear-gradient(90deg,#319cfa 10%,#6ffab6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px #319cfa16);
+  width: 100%;
+}
+.progress-section {
+  text-align: center;
+  margin-bottom: 19px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.progress-bar-bg {
+  width: 100%;
+  background: rgba(220,234,250,0.69);
+  border-radius: 19px;
+  height: 26px;
+  margin: 0 auto 12px auto;
+  box-shadow: 0 1.5px 6px 0 rgba(49,180,250,0.11);
+  overflow: hidden;
+  border: 1.5px solid #b9e3fa7a;
+  position: relative;
+  max-width: 340px;
+}
+.progress-bar {
+  background: linear-gradient(90deg, #41e1a8 2%, #319cfa 96%);
+  height: 26px;
+  border-radius: 19px;
+  width: 0%;
+  box-shadow: 0 2px 14px #41e1a850 inset;
+  transition: width 0.9s cubic-bezier(0.31,0.67,0.49,1.13);
+}
+.percentage, .small-note, #challenge-dates {
+  text-align: center !important;
+  width: 100%;
+  display: block;
+  margin: 0 auto 6px auto;
+}
+.percentage {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #145f8d;
+  text-shadow: 0 1px 2px #b0e7f6cc;
+  margin-bottom: 7px;
+}
+#tracker-cards {
+  width: 100%;
+}
+.tracker-card {
+  background: rgba(255,255,255,0.99);
+  border-radius: 17px;
+  box-shadow: 0 1.5px 10px #85c2eb16, 0 1px 6px #b6f5e313;
+  margin-bottom: 22px;
+  padding: 13px 12px 14px 12px;
+  transition: box-shadow 0.18s, background 0.15s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.tracker-card.today {
+  border: 2.5px solid #68e7b8;
+  box-shadow: 0 1.5px 14px #68e7b829;
+  background: #f7fffad6;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.card-date {
+  font-size: 1.09em;
+  font-weight: 600;
+  color: #3ba1cd;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.card-day {
+  font-size: 0.98em;
+  color: #57b6e4;
+  margin-right: 4px;
+  font-weight: 700;
+}
+.card-perfect {
+  color: #ffd700;
+  font-size: 1.22em;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  animation: pop 0.7s cubic-bezier(.22,1.01,.69,.95);
+  text-shadow: 0 2px 10px #ffef8598;
+  filter: drop-shadow(0 1.5px 9px #ffd70095);
+}
+@keyframes pop {
+  0% { transform: scale(0.7);}
+  70% { transform: scale(1.25);}
+  100% { transform: scale(1);}
+}
+.card-goals {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  justify-content: space-between;
+  width: 100%;
+}
+.goal-label {
+  flex: 1 1 0;
+  text-align: left;
+  font-size: 1em;
+  font-weight: 600;
+  color: #289ab7;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.23em;
+  transition: color 0.13s;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+}
+.goal-label:hover { color: #155f88; text-decoration: underline; }
+.goal-btn {
+  flex: 0 0 auto;
+  min-width: 54px;
+  max-width: 84px;
+  padding: 7px 4px;
+  font-size: 0.97em;
+  background: linear-gradient(90deg, #f5fafd 70%, #e4f6f6 100%);
+  border: 2px solid #b5c2d1;
+  color: #3791d1;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.17s, border-color 0.17s, color 0.12s, box-shadow 0.17s, transform 0.11s;
+  box-shadow: 0 1.5px 6px #60d0fb0f;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.13em;
+  word-break: break-word;
+  margin-right: 3px;
+}
+.goal-btn:active { background: #dafce8; transform: scale(0.96);}
+.goal-btn.completed {
+  background: linear-gradient(90deg, #49dfa0 15%, #31b7fa 100%);
+  color: #fff;
+  border: 2px solid #30a987;
+  font-weight: 700;
+  box-shadow: 0 1.5px 10px #31b7fa18 inset;
+  transform: scale(1.04);
+  letter-spacing: 0.01em;
+  filter: drop-shadow(0 1.8px 6px #36deac60);
+}
+.goal-star {
+  color: #ffd700;
+  font-size: 1.11em;
+  margin-left: 3px;
+  filter: drop-shadow(0 1px 4px #f7d73d53);
+  vertical-align: middle;
+  line-height: 1;
+}
+.card-notes {
+  width: 100%;
+  margin-top: 7px;
+}
+.note-label {
+  color: #49a8c1;
+  font-size: 0.96em;
+  font-weight: 600;
+  margin-bottom: 1px;
+  display: block;
+  letter-spacing: 0.01em;
+}
+.note-input {
+  width: 100%;
+  min-width: 60px;
+  min-height: 20px;
+  font-size: 1em;
+  font-family: inherit;
+  border: 1.4px solid #c2e2f6;
+  border-radius: 7px;
+  padding: 6px 7px;
+  box-sizing: border-box;
+  resize: vertical;
+  background: #fff;
+  margin-top: 2px;
+  transition: border-color 0.14s;
+}
+.note-input:focus {
+  outline: none;
+  border-color: #51d9e6;
+  background: #f0fbf9;
+}
+.small-note {
+  color: #708497;
+  font-size: 0.96em;
+  margin-top: 13px;
+  text-align: center;
+  opacity: 0.87;
+  letter-spacing: 0.01em;
+  padding-bottom: 2px;
+}
+
+/* Modal styles for wizard/goal info */
+.modal-bg {
+  display: none;
+  position: fixed;
+  top:0; left:0; width:100vw; height:100vh;
+  background: rgba(60,100,170,0.14);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.22s;
+}
+.modal-bg.active { display: flex; }
+.modal-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 10px 42px #39b7fa2b, 0 3px 10px #aae9d728;
+  padding: 30px 18px 18px 18px;
+  max-width: 95vw;
+  width: 370px;
+  text-align: center;
+  position: relative;
+  animation: pop .32s cubic-bezier(.22,1.01,.69,.95);
+}
+.modal-card h2 {
+  margin: 0 0 14px 0;
+  font-size: 1.15em;
+  color: #2ca7e4;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.modal-card p {
+  color: #33547a;
+  font-size: 1.04em;
+  line-height: 1.4em;
+  margin: 0 0 8px 0;
+}
+.close-modal {
+  position: absolute;
+  right: 18px;
+  top: 12px;
+  font-size: 1.55em;
+  color: #49dfa0;
+  cursor: pointer;
+  font-weight: 800;
+  border: none;
+  background: none;
+  outline: none;
+  transition: color 0.13s;
+  z-index: 101;
+}
+.close-modal:hover { color: #eb5656; }
+.wizard-step { margin-bottom: 14px; }
+.wizard-progress {
+  color: #319cfa; font-size: 0.97em; font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.wizard-actions {
+  margin-top: 16px;
+  text-align: center;
+}
+.wizard-actions button {
+  background: linear-gradient(90deg,#5eebae 30%,#36a7ee 100%);
+  color: #fff; border: none; border-radius: 9px;
+  padding: 7px 23px; font-size: 1.09em; font-weight: 700;
+  margin: 0 7px; box-shadow: 0 1.5px 10px #54dfd44e;
+  cursor: pointer; transition: background 0.14s;
+}
+.wizard-actions button:hover {
+  background: linear-gradient(90deg,#36a7ee 10%,#5eebae 100%);
+}
+.wizard-input, .wizard-textarea, .wizard-date {
+  width: 99%; border-radius: 7px; padding: 8px 6px;
+  font-size: 1.06em; border: 1.6px solid #b8e0e9;
+  background: #f9fcfd; margin-bottom: 2px; font-family: inherit;
+  transition: border-color 0.12s;
+}
+.wizard-textarea { min-height: 34px; }
+.wizard-input:focus, .wizard-textarea:focus, .wizard-date:focus {
+  outline: none; border-color: #39e7d2; background: #f6fcfa;
+}
+.wizard-summary {
+  background: #f5fafc;
+  border-radius: 14px;
+  padding: 13px 8px;
+  margin-bottom: 13px;
+  font-size: 1.05em;
+  color: #27809c;
+  box-shadow: 0 1px 9px #b9f6ed33;
+  text-align: left;
+}
+.wizard-summary b { color: #249da7; }
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .container { padding: 6px 2vw 16px 2vw;}
+  h1 { font-size: 1.09em;}
+  .progress-bar-bg { height: 19px; max-width: 98vw;}
+  .tracker-card { padding: 10px 4px 12px 4px; }
+  .goal-btn { min-width: 40px; max-width: 66px; font-size: 0.89em; padding: 6px 2px; }
+}
+@media (max-width: 460px) {
+  .container { padding: 2px 0.5vw 8px 0.5vw;}
+  .tracker-card { padding: 7px 1px 10px 1px; }
+  .goal-btn { min-width: 32px; max-width: 54px; font-size: 0.80em; padding: 5px 1px; }
+}
+
+</style>
+<body>
+  <div class="container">
+    <div class="settings-bar">
+      <button class="settings-btn" id="open-wizard-btn">New Challenge / Edit Goals</button>
+    </div>
+    <h1 id="challenge-title">90-Day 5-Goal Daily Tracker</h1>
+    <div class="progress-section">
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <span class="percentage" id="percent"></span>
+      <div class="small-note" id="challenge-dates"></div>
+    </div>
+
+    <!-- Card-based day tracker -->
+    <div id="tracker-cards"></div>
+
+    <div class="small-note" style="margin-bottom:12px;">
+      ⭐ Tap a goal to complete it.<br>
+      Tap a <u>goal name</u> for details.<br>
+      Progress and notes are saved in your browser.<br>
+      <b>Tip:</b> Bookmark this page for quick access every day!
+    </div>
+  </div>
+
+  <!-- Success and Perfect Sounds -->
+  <audio id="success-sound" src="success.mp3" preload="auto"></audio>
+  <audio id="perfect-sound" src="perfect.mp3" preload="auto"></audio>
+
+  <!-- Goal Modal -->
+  <div class="modal-bg" id="goal-modal-bg">
+    <div class="modal-card" id="goal-modal-card">
+      <button class="close-modal" id="close-goal-modal">&times;</button>
+      <h2 id="goal-modal-title"></h2>
+      <p id="goal-modal-desc"></p>
+    </div>
+  </div>
+  
+  <!-- Step-by-step Wizard Modal -->
+  <div class="modal-bg" id="wizard-modal-bg">
+    <div class="modal-card" id="wizard-modal-card">
+      <button class="close-modal" id="close-wizard-modal">&times;</button>
+      <div id="wizard-content"></div>
+    </div>
+  </div>
+
+
+  <!-- JS will be added in the next step -->
+<script>
+// ========================
+// 90-Day 5-Goal Tracker (Card UI)
+// ========================
+
+// --------- CONFIGURATION AND STORAGE ----------
+const DEFAULTS = {
+  challengeTitle: "90-Day 5-Goal Daily Tracker",
+  startDate: new Date().toISOString().slice(0,10),
+  goals: [
+    "Complete walk/jog",
+    "Take medication",
+    "Weight lifting & pushups",
+    "Laundry/trash/floor care",
+    "1hr video editing/voice acting/programming"
+  ],
+  goalDescs: [
+    "Complete your daily walk or jog. The goal is to build endurance and get closer to your 1hr 15min walking/jogging target.",
+    "Take any daily medications or supplements as prescribed. Prioritize your health routines.",
+    "Do your weight lifting and pushup routine for the day. Build strength and stay active.",
+    "Take care of laundry, trash, and floors. A clean environment supports a clear mind.",
+    "Work for 1 hour on video editing, voice acting, or programming. Progress adds up!"
+  ]
+};
+const STORAGE_KEY = "my_90day_goal_tracker_cards_v1";
+
+function getSavedData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function getChallengeConfig() {
+  const data = getSavedData();
+  if (!data.challenge) {
+    return {...DEFAULTS, days: 90};
+  }
+  return {...data.challenge, days: 90};
+}
+function saveChallengeConfig(config) {
+  let data = getSavedData();
+  data.challenge = config;
+  saveData(data);
+}
+
+function genDates(startDate, days) {
+  let arr = [];
+  let d = new Date(startDate + "T00:00:00");
+  for(let i=0; i<days; i++) {
+    let nd = new Date(d);
+    nd.setDate(d.getDate() + i);
+    arr.push(nd);
+  }
+  return arr;
+}
+
+// --------- RENDER CARDS ----------
+function renderCards() {
+  const config = getChallengeConfig();
+  const {goals, goalDescs, startDate, days} = config;
+  let data = getSavedData();
+  data.progress = data.progress || {};
+  data.notes = data.notes || {};
+  data.perfectPlayed = data.perfectPlayed || {};
+  let cardsContainer = document.getElementById('tracker-cards');
+  cardsContainer.innerHTML = '';
+  let allDates = genDates(startDate, days);
+  let total = 0, completed = 0;
+  let todayStr = (new Date()).toLocaleDateString('en-US', {month:'2-digit',day:'2-digit',year:'numeric'});
+  allDates.forEach((dateObj, row) => {
+    let dateStr = dateObj.toLocaleDateString('en-US', {month:'2-digit',day:'2-digit',year:'numeric'});
+    let dayName = dateObj.toLocaleDateString('en-US', {weekday:'short'});
+    total += goals.length;
+
+    // Create card
+    let card = document.createElement('div');
+    card.className = 'tracker-card' + (dateStr === todayStr ? ' today' : '');
+
+    // Card header: date, perfect-day badge
+    let header = document.createElement('div');
+    header.className = 'card-header';
+    let dateLabel = document.createElement('div');
+    dateLabel.className = 'card-date';
+    dateLabel.innerHTML = `<span class="card-day">${dayName}</span>${dateStr}`;
+    header.appendChild(dateLabel);
+
+    // Check if "perfect day"
+    let perfect = true;
+    for(let col=0; col<goals.length; col++) {
+      let cellId = `${row}_${col}`;
+      if (!(data.progress[cellId] === true)) perfect = false;
+    }
+    if (perfect) {
+      let perfectEl = document.createElement('span');
+      perfectEl.className = 'card-perfect';
+      perfectEl.innerHTML = '🌟 <span style="font-size:1em;color:#34b972;">Perfect!</span>';
+      header.appendChild(perfectEl);
+    }
+    card.appendChild(header);
+
+    // Card goals
+    let goalsDiv = document.createElement('div');
+    goalsDiv.className = 'card-goals';
+    for(let col=0; col<goals.length; col++) {
+      let cellId = `${row}_${col}`;
+      let done = data.progress[cellId] === true;
+      if (done) completed++;
+      let goalRow = document.createElement('div');
+      goalRow.className = 'goal-row';
+
+      // Goal name (clickable for details)
+      let goalBtnLabel = document.createElement('button');
+      goalBtnLabel.className = 'goal-label';
+      goalBtnLabel.type = 'button';
+      goalBtnLabel.textContent = goals[col];
+      goalBtnLabel.onclick = () => openGoalModal(col);
+
+      // Button for marking done
+      let btn = document.createElement('button');
+      btn.className = 'goal-btn' + (done ? ' completed' : '');
+      btn.textContent = done ? 'Done' : 'Mark Done';
+      btn.onclick = () => {
+        let nowDone = !done;
+        data.progress[cellId] = nowDone;
+        saveData(data);
+        if (nowDone) playSound();
+        // Check if all goals for the day are now done (for perfect-day sound)
+        let allDone = true;
+        for (let cc=0; cc<goals.length; cc++) {
+          if (cc === col) {
+            if (!nowDone) allDone = false;
+          } else {
+            if (!(data.progress[`${row}_${cc}`] === true)) allDone = false;
+          }
+        }
+        if (allDone && !data.perfectPlayed[row]) {
+          playPerfectSound();
+          data.perfectPlayed[row] = true;
+          saveData(data);
+        }
+        if (!allDone && data.perfectPlayed[row]) {
+          data.perfectPlayed[row] = false;
+          saveData(data);
+        }
+        renderCards();
+      };
+
+      // Star if done
+      let starSpan = document.createElement('span');
+      starSpan.className = 'goal-star';
+      if (done) starSpan.textContent = '⭐';
+
+      // Layout: label | button | star
+      goalRow.appendChild(goalBtnLabel);
+      goalRow.appendChild(btn);
+      goalRow.appendChild(starSpan);
+      goalsDiv.appendChild(goalRow);
+    }
+    card.appendChild(goalsDiv);
+
+    // Card notes
+    let notesDiv = document.createElement('div');
+    notesDiv.className = 'card-notes';
+    notesDiv.innerHTML = `<span class="note-label">Note for <b>${dayName} ${dateStr}</b>:</span>
+      <textarea class="note-input" rows="2" placeholder="Add note..."></textarea>`;
+    let noteInput = notesDiv.querySelector('textarea');
+    noteInput.value = data.notes[row] || "";
+    noteInput.onchange = function() {
+      data.notes[row] = noteInput.value;
+      saveData(data);
+    };
+    card.appendChild(notesDiv);
+
+    cardsContainer.appendChild(card);
+  });
+
+  // Progress update
+  let percent = Math.round((completed/total)*1000)/10;
+  document.getElementById('percent').textContent = `${completed} / ${total} (${percent}%) completed`;
+  document.getElementById('progress-bar').style.width = `${percent}%`;
+
+  // Challenge info at top
+  document.getElementById('challenge-title').textContent = config.challengeTitle || DEFAULTS.challengeTitle;
+  let endDate = allDates[allDates.length-1];
+  let prettyStart = allDates[0].toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'});
+  let prettyEnd = endDate.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'});
+  document.getElementById('challenge-dates').textContent = `From ${prettyStart} to ${prettyEnd} (${days} days) • Goal: 80%+ completion`;
+}
+
+// --- SOUND ---
+function playSound() {
+  let audio = document.getElementById('success-sound');
+  if (audio) { audio.currentTime = 0; audio.play(); }
+}
+function playPerfectSound() {
+  let audio = document.getElementById('perfect-sound');
+  if (audio) { audio.currentTime = 0; audio.play(); }
+}
+
+// ---------- GOAL MODAL ----------
+function openGoalModal(goalId) {
+  const config = getChallengeConfig();
+  document.getElementById('goal-modal-title').textContent = config.goals[goalId];
+  document.getElementById('goal-modal-desc').textContent = config.goalDescs[goalId];
+  document.getElementById('goal-modal-bg').classList.add('active');
+}
+function closeGoalModal() {
+  document.getElementById('goal-modal-bg').classList.remove('active');
+}
+
+// ---------- STEP-BY-STEP WIZARD ----------
+function openWizard() {
+  wizardStep = 0;
+  wizardData = {
+    challengeTitle: "",
+    startDate: new Date().toISOString().slice(0,10),
+    goals: [],
+    goalDescs: []
+  };
+  renderWizardStep();
+  document.getElementById('wizard-modal-bg').classList.add('active');
+}
+function closeWizard() {
+  document.getElementById('wizard-modal-bg').classList.remove('active');
+}
+let wizardStep = 0;
+let wizardData = {};
+const wizardTotalSteps = 12;
+
+function renderWizardStep() {
+  const c = wizardData;
+  const content = document.getElementById('wizard-content');
+  let step = wizardStep;
+  content.innerHTML = '';
+  function makeInput(label, id, val, type="text", placeholder="", required=true) {
+    return `<label style="text-align:left;display:block;font-weight:600;margin-bottom:4px;margin-top:4px;">${label}</label>
+    <input class="wizard-input" type="${type}" id="${id}" value="${val||''}" placeholder="${placeholder||''}" ${required?'required':''} autofocus>`;
+  }
+  function makeTextarea(label, id, val, placeholder="", required=true) {
+    return `<label style="text-align:left;display:block;font-weight:600;margin-bottom:4px;margin-top:4px;">${label}</label>
+    <textarea class="wizard-textarea" id="${id}" placeholder="${placeholder||''}" ${required?'required':''} autofocus>${val||''}</textarea>`;
+  }
+  let progressText = '';
+  if(step<=11) progressText = `<div class="wizard-progress">Step ${step+1} of 12</div>`;
+  if (step === 0) {
+    content.innerHTML = `
+      ${progressText}
+      <div class="wizard-step">
+        <h2>What is the name of your challenge?</h2>
+        ${makeInput("Challenge Name", "wizTitle", c.challengeTitle||"", "text", "Ex: 90-Day Transformation")}
+      </div>
+      <div class="wizard-actions">
+        <button id="wizNext">Next</button>
+      </div>
+    `;
+    document.getElementById('wizNext').onclick = () => {
+      c.challengeTitle = document.getElementById('wizTitle').value.trim() || DEFAULTS.challengeTitle;
+      wizardStep++; renderWizardStep();
+    };
+  } else if (step === 1) {
+    content.innerHTML = `
+      ${progressText}
+      <div class="wizard-step">
+        <h2>Pick a start date</h2>
+        ${makeInput("Start Date", "wizDate", c.startDate||new Date().toISOString().slice(0,10), "date", "", true)}
+      </div>
+      <div class="wizard-actions">
+        <button id="wizPrev">Back</button>
+        <button id="wizNext">Next</button>
+      </div>
+    `;
+    document.getElementById('wizPrev').onclick = () => { wizardStep--; renderWizardStep(); }
+    document.getElementById('wizNext').onclick = () => {
+      c.startDate = document.getElementById('wizDate').value || new Date().toISOString().slice(0,10);
+      wizardStep++; renderWizardStep();
+    };
+  } else if (step >=2 && step<=11) {
+    let goalIdx = Math.floor((step-2)/2);
+    let isDesc = ((step-2)%2===1);
+    if (!isDesc) {
+      content.innerHTML = `
+        ${progressText}
+        <div class="wizard-step">
+          <h2>Goal ${goalIdx+1} Name</h2>
+          ${makeInput(`Goal ${goalIdx+1} Name`, `wizGoal${goalIdx}`, c.goals[goalIdx]||"", "text", "E.g. Daily exercise")}
+        </div>
+        <div class="wizard-actions">
+          <button id="wizPrev">Back</button>
+          <button id="wizNext">Next</button>
+        </div>
+      `;
+      document.getElementById('wizPrev').onclick = () => { wizardStep--; renderWizardStep(); }
+      document.getElementById('wizNext').onclick = () => {
+        c.goals[goalIdx] = document.getElementById(`wizGoal${goalIdx}`).value.trim() || DEFAULTS.goals[goalIdx];
+        wizardStep++; renderWizardStep();
+      };
+    } else {
+      content.innerHTML = `
+        ${progressText}
+        <div class="wizard-step">
+          <h2>Goal ${goalIdx+1} Description</h2>
+          ${makeTextarea(`Goal ${goalIdx+1} Description`, `wizDesc${goalIdx}`, c.goalDescs[goalIdx]||"", "Describe the goal.")}
+        </div>
+        <div class="wizard-actions">
+          <button id="wizPrev">Back</button>
+          <button id="wizNext">Next</button>
+        </div>
+      `;
+      document.getElementById('wizPrev').onclick = () => { wizardStep--; renderWizardStep(); }
+      document.getElementById('wizNext').onclick = () => {
+        c.goalDescs[goalIdx] = document.getElementById(`wizDesc${goalIdx}`).value.trim() || DEFAULTS.goalDescs[goalIdx];
+        wizardStep++; renderWizardStep();
+      };
+    }
+  } else if (step === 12) {
+    let goalsReview = '';
+    for(let i=0;i<5;i++) {
+      goalsReview += `<div class="wizard-summary">
+        <b>Goal ${i+1}:</b> ${c.goals[i]||DEFAULTS.goals[i]}<br>
+        <b>Description:</b> ${c.goalDescs[i]||DEFAULTS.goalDescs[i]}
+      </div>`;
+    }
+    content.innerHTML = `
+      <div class="wizard-progress">Step 13 of 13</div>
+      <div class="wizard-step">
+        <h2>Review & Start</h2>
+        <div class="wizard-summary"><b>Challenge Name:</b> ${c.challengeTitle||DEFAULTS.challengeTitle}</div>
+        <div class="wizard-summary"><b>Start Date:</b> ${c.startDate||new Date().toISOString().slice(0,10)}</div>
+        ${goalsReview}
+      </div>
+      <div class="wizard-actions">
+        <button id="wizPrev">Back</button>
+        <button id="wizStart">Start Challenge</button>
+      </div>
+    `;
+    document.getElementById('wizPrev').onclick = () => { wizardStep--; renderWizardStep(); }
+    document.getElementById('wizStart').onclick = () => {
+      let config = {
+        challengeTitle: c.challengeTitle || DEFAULTS.challengeTitle,
+        startDate: c.startDate || DEFAULTS.startDate,
+        days: 90,
+        goals: c.goals.map((g,i)=>g||DEFAULTS.goals[i]),
+        goalDescs: c.goalDescs.map((d,i)=>d||DEFAULTS.goalDescs[i])
+      };
+      let data = getSavedData();
+      data.challenge = config;
+      data.progress = {};
+      data.notes = {};
+      data.perfectPlayed = {};
+      saveData(data);
+      closeWizard();
+      renderCards();
+    };
+  }
+}
+
+// ---- DOM EVENT HOOKS ----
+document.addEventListener('DOMContentLoaded', function() {
+  renderCards();
+  document.getElementById('close-goal-modal').onclick = closeGoalModal;
+  document.getElementById('goal-modal-bg').onclick = function(e) {
+    if (e.target === this) closeGoalModal();
+  };
+  document.getElementById('open-wizard-btn').onclick = openWizard;
+  document.getElementById('close-wizard-modal').onclick = closeWizard;
+  document.getElementById('wizard-modal-bg').onclick = function(e) {
+    if (e.target === this) closeWizard();
+  };
+  window.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") {
+      closeGoalModal();
+      closeWizard();
+    }
+  });
+  const data = getSavedData();
+  if (!data.challenge) openWizard();
+});
+
+</script>
+</body>
+</html>
