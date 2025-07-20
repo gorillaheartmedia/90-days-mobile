@@ -273,22 +273,25 @@ h1 {
 .modal-bg {
   display: none;
   position: fixed;
-  top:0; left:0; width:100vw; height:100vh;
+  top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(60,100,170,0.14);
   z-index: 10000;
   align-items: center;
   justify-content: center;
-  transition: background 0.22s;
+  overflow-y: auto; /* Add this */
+  padding: 20px 0; /* Add space for safe bottom */
 }
+
 .modal-bg.active { display: flex; }
 .modal-card {
   background: #fff;
   border-radius: 22px;
   box-shadow: 0 10px 42px #39b7fa2b, 0 3px 10px #aae9d728;
-  padding: 30px 18px 18px 18px;
-  max-width: 95vw;
-  width: 370px;
-  text-align: center;
+  padding: 35px 25px 28px 25px;
+  width: 410px;
+  max-width: 92vw;
+  max-height: 95vh; /* Force modal to stay within screen height */
+  overflow-y: auto; /* Allow modal itself to scroll */
   position: relative;
   animation: pop .32s cubic-bezier(.22,1.01,.69,.95);
 }
